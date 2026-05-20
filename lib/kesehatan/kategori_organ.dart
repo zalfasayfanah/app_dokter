@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'kategori_penyakit.dart';
 
-// ─── Model ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// MODEL
+// ─────────────────────────────────────────────────────────────────────────────
 
 class OrganItem {
   final String nama;
@@ -15,33 +17,35 @@ class OrganItem {
   });
 }
 
-// ─── Data (ganti/tambah sesuai kebutuhan) ────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────────────────────
 
 final List<OrganItem> organList = [
   const OrganItem(
     nama: 'Usus',
     deskripsi: 'Gangguan Pada Usus Saluran Pencernaan',
-    icon: Icons.animation_rounded,
+    icon: Icons.view_week_rounded,
   ),
   const OrganItem(
     nama: 'Ginjal',
-    deskripsi: 'Masalah Ginjal dan kantung kemih',
+    deskripsi: 'Masalah Ginjal dan Kantung Kemih',
     icon: Icons.water_drop_rounded,
   ),
   const OrganItem(
     nama: 'Jantung',
-    deskripsi: 'Masalah Jantung, Pembuluh Darah dan silkurasi',
+    deskripsi: 'Masalah Jantung, Pembuluh Darah dan Sirkulasi',
     icon: Icons.favorite_rounded,
   ),
   const OrganItem(
     nama: 'Pencernaan',
-    deskripsi: 'Masalah Lambung dan masalah Pencernaan',
-    icon: Icons.blur_circular_rounded,
+    deskripsi: 'Masalah Lambung dan Sistem Pencernaan',
+    icon: Icons.restaurant_rounded,
   ),
   const OrganItem(
     nama: 'Hati',
-    deskripsi: 'Gangguan Pada Hati, Empedu dan pankreas',
-    icon: Icons.eco_rounded,
+    deskripsi: 'Gangguan Pada Hati, Empedu dan Pankreas',
+    icon: Icons.bloodtype_rounded,
   ),
   const OrganItem(
     nama: 'Otak',
@@ -50,12 +54,12 @@ final List<OrganItem> organList = [
   ),
   const OrganItem(
     nama: 'Tulang',
-    deskripsi: 'Gangguan tulang, Otot dan Sendi',
+    deskripsi: 'Gangguan Tulang, Otot dan Sendi',
     icon: Icons.accessibility_new_rounded,
   ),
   const OrganItem(
     nama: 'Paru-Paru',
-    deskripsi: 'Masalah Paru-paru dan saluran pernafasan',
+    deskripsi: 'Masalah Paru-paru dan Saluran Pernafasan',
     icon: Icons.air_rounded,
   ),
   const OrganItem(
@@ -65,7 +69,11 @@ final List<OrganItem> organList = [
   ),
 ];
 
-// ─── Screen ──────────────────────────────────────────────────────────────────
+const int _kInitialVisible = 6;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SCREEN
+// ─────────────────────────────────────────────────────────────────────────────
 
 class KategoriOrgan extends StatefulWidget {
   const KategoriOrgan({super.key});
@@ -75,13 +83,15 @@ class KategoriOrgan extends StatefulWidget {
 }
 
 class _KategoriOrganState extends State<KategoriOrgan> {
-  static const Color backgroundGrey = Color(0xFFF0F4FA);
-  static const Color primaryBlue    = Color(0xFF1A3A6B);
+  static const Color backgroundGrey = Color(0xFFEEF3FB);
+  static const Color primaryBlue    = Color(0xFF1A73E8); // ← sama dengan pelayanan
   static const Color textDark       = Color(0xFF1A1A2E);
   static const Color textMedium     = Color(0xFF6B7280);
 
   final TextEditingController _searchController = TextEditingController();
+
   List<OrganItem> _filtered = organList;
+  bool _showAll = false;
 
   @override
   void dispose() {
@@ -93,13 +103,19 @@ class _KategoriOrganState extends State<KategoriOrgan> {
     setState(() {
       _filtered = query.isEmpty
           ? organList
-          : organList
-              .where((o) =>
-                  o.nama.toLowerCase().contains(query.toLowerCase()) ||
-                  o.deskripsi.toLowerCase().contains(query.toLowerCase()))
-              .toList();
+          : organList.where((o) {
+              return o.nama.toLowerCase().contains(query.toLowerCase()) ||
+                  o.deskripsi.toLowerCase().contains(query.toLowerCase());
+            }).toList();
     });
   }
+
+  List<OrganItem> get _visible {
+    if (_showAll || _filtered.length <= _kInitialVisible) return _filtered;
+    return _filtered.sublist(0, _kInitialVisible);
+  }
+
+  bool get _showToggle => _filtered.length > _kInitialVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -112,14 +128,24 @@ class _KategoriOrganState extends State<KategoriOrgan> {
             _buildHeader(),
             _buildSearchBar(),
             _buildTitle(),
-            Expanded(child: _buildGrid()),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildGrid(),
+                    if (_showToggle) _buildToggleButton(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // ── Header ─────────────────────────────────────────────────────────────────
+  // ─── HEADER ──────────────────────────────────────────────────
 
   Widget _buildHeader() {
     return Padding(
@@ -130,25 +156,28 @@ class _KategoriOrganState extends State<KategoriOrgan> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: const Color(0xFF1A73E8),
+              color: primaryBlue,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.medical_services_rounded,
-                color: Colors.white, size: 20),
+            child: const Icon(
+              Icons.medical_services_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 10),
           RichText(
-            text: const TextSpan(
+            text: TextSpan(
               children: [
                 TextSpan(
                   text: 'Edu',
                   style: TextStyle(
-                    color: Color(0xFF1A73E8),
+                    color: primaryBlue,
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
                 ),
-                TextSpan(
+                const TextSpan(
                   text: 'Health',
                   style: TextStyle(
                     color: Color(0xFFF59E0B),
@@ -164,7 +193,7 @@ class _KategoriOrganState extends State<KategoriOrgan> {
     );
   }
 
-  // ── Search Bar ─────────────────────────────────────────────────────────────
+  // ─── SEARCH BAR ──────────────────────────────────────────────
 
   Widget _buildSearchBar() {
     return Padding(
@@ -175,7 +204,7 @@ class _KategoriOrganState extends State<KategoriOrgan> {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -187,18 +216,16 @@ class _KategoriOrganState extends State<KategoriOrgan> {
           decoration: const InputDecoration(
             hintText: 'Search',
             hintStyle: TextStyle(color: Color(0xFFB0B8C1), fontSize: 15),
-            prefixIcon: Icon(Icons.search_rounded,
-                color: Color(0xFFB0B8C1), size: 22),
+            prefixIcon: Icon(Icons.search_rounded, color: Color(0xFFB0B8C1)),
             border: InputBorder.none,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
           ),
         ),
       ),
     );
   }
 
-  // ── Title ──────────────────────────────────────────────────────────────────
+  // ─── TITLE ───────────────────────────────────────────────────
 
   Widget _buildTitle() {
     return const Padding(
@@ -214,29 +241,34 @@ class _KategoriOrganState extends State<KategoriOrgan> {
     );
   }
 
-  // ── Grid ───────────────────────────────────────────────────────────────────
+  // ─── GRID ────────────────────────────────────────────────────
 
   Widget _buildGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 0.85,
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxis   = screenWidth < 360 ? 2 : 3;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: _visible.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxis,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.68,
+        ),
+        itemBuilder: (_, index) => _buildOrganCard(_visible[index]),
       ),
-      itemCount: _filtered.length + 1, // +1 untuk tombol Lainnya
-      itemBuilder: (context, index) {
-        if (index == _filtered.length) return _buildLainnyaButton();
-        return _buildOrganCard(_filtered[index]);
-      },
     );
   }
+
+  // ─── CARD ────────────────────────────────────────────────────
 
   Widget _buildOrganCard(OrganItem item) {
     return GestureDetector(
       onTap: () {
-        // Navigasi ke Kategori Penyakit, kirim nama organ sebagai judul
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -245,43 +277,47 @@ class _KategoriOrganState extends State<KategoriOrgan> {
         );
       },
       child: Container(
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(item.icon, color: primaryBlue, size: 36),
-            const SizedBox(height: 8),
+            Icon(item.icon, color: primaryBlue, size: 34),
+            const SizedBox(height: 10),
             Text(
               item.nama,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: primaryBlue,
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
-            Text(
-              item.deskripsi,
-              style: const TextStyle(
-                color: textMedium,
-                fontSize: 10,
-                height: 1.3,
+            const SizedBox(height: 6),
+            Expanded(
+              child: Text(
+                item.deskripsi,
+                textAlign: TextAlign.center,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: textMedium,
+                  fontSize: 10,
+                  height: 1.4,
+                ),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -289,25 +325,50 @@ class _KategoriOrganState extends State<KategoriOrgan> {
     );
   }
 
-  Widget _buildLainnyaButton() {
-    return GestureDetector(
-      onTap: () {
-        // TODO: aksi tombol Lainnya (tampilkan semua organ, dll.)
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
-        ),
-        child: const Center(
-          child: Text(
-            'Lainnya',
-            style: TextStyle(
-              color: primaryBlue,
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-            ),
+  // ─── TOMBOL LAINNYA / SEMBUNYIKAN ────────────────────────────
+
+  Widget _buildToggleButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      child: GestureDetector(
+        onTap: () => setState(() => _showAll = !_showAll),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _showAll ? 'Sembunyikan' : 'Lainnya',
+                style: const TextStyle(
+                  color: primaryBlue,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(width: 6),
+              AnimatedRotation(
+                turns: _showAll ? 0.5 : 0,
+                duration: const Duration(milliseconds: 250),
+                child: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: primaryBlue,
+                  size: 20,
+                ),
+              ),
+            ],
           ),
         ),
       ),

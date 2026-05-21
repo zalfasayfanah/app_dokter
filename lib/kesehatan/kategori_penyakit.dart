@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'detail_penyakit.dart';
 // ─── Model ───────────────────────────────────────────────────────────────────
 
 class PenyakitItem {
@@ -269,29 +269,15 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
   Widget _buildPenyakitCard(BuildContext context, PenyakitItem item) {
     return GestureDetector(
       onTap: () {
-        // ── Navigasi ke Detail Penyakit ──────────────────────────────────────
-        // Tim detail penyakit: buat file lib/kesehatan/detail_penyakit.dart
-        // dengan class DetailPenyakit yang menerima parameter String namaPenyakit.
-        //
-        // Lalu aktifkan baris berikut (hapus komentar):
-        //
-        // import 'detail_penyakit.dart'; // tambahkan di bagian atas file ini
-        //
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (_) => DetailPenyakit(namaPenyakit: item.nama),
-        //   ),
-        // );
-        //
-        // Sementara ini tampilkan SnackBar sebagai penanda navigasi:
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Menuju detail: ${item.nama}'),
-            duration: const Duration(seconds: 1),
-            behavior: SnackBarBehavior.floating,
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DetailPenyakit(
+              namaPenyakit: item.nama,
+            ),
           ),
         );
+
       },
       child: Container(
         decoration: BoxDecoration(

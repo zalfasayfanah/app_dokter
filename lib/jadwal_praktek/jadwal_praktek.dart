@@ -72,10 +72,10 @@ final List<RumahSakitItem> rumahSakitList = [
 class JadwalPraktek extends StatelessWidget {
   const JadwalPraktek({super.key});
 
-  static const Color primaryBlue  = Color(0xFF1A73E8);
+  static const Color primaryBlue    = Color(0xFF1A3C92);
   static const Color backgroundGrey = Color(0xFFF0F4FA);
-  static const Color textDark     = Color(0xFF1A1A2E);
-  static const Color textMedium   = Color(0xFF6B7280);
+  static const Color textDark       = Color(0xFF1A1A2E);
+  static const Color textMedium     = Color(0xFF6B7280);
 
   @override
   Widget build(BuildContext context) {
@@ -101,15 +101,10 @@ class JadwalPraktek extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: primaryBlue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.medical_services_rounded,
-                color: Colors.white, size: 20),
+          Image.asset(
+            'assets/images/Logo_eduhealth_2.png', // ← nama file harus sama persis
+            width: 40,
+            height: 40,
           ),
           const SizedBox(width: 10),
           RichText(
@@ -118,7 +113,7 @@ class JadwalPraktek extends StatelessWidget {
                 TextSpan(
                   text: 'Edu',
                   style: TextStyle(
-                    color: primaryBlue,
+                    color: Color(0xFF1A3C92),
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
@@ -126,7 +121,7 @@ class JadwalPraktek extends StatelessWidget {
                 TextSpan(
                   text: 'Health',
                   style: TextStyle(
-                    color: Color(0xFFF59E0B),
+                    color: Color(0xFFFBBF24),
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
@@ -147,7 +142,7 @@ class JadwalPraktek extends StatelessWidget {
       child: Text(
         'JADWAL PRAKTEK',
         style: TextStyle(
-          color: textDark,
+          color: primaryBlue,
           fontWeight: FontWeight.w900,
           fontSize: 22,
           letterSpacing: 0.5,
@@ -201,7 +196,7 @@ class JadwalPraktek extends StatelessWidget {
             Row(
               children: [
                 const Icon(Icons.local_hospital_rounded,
-                    color: primaryBlue, size: 18),
+                    color: Color(0xFFFBBF24), size: 18),
                 const SizedBox(width: 6),
                 Text(
                   item.nama,

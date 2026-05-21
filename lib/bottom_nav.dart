@@ -31,7 +31,7 @@ class EduHealthBottomNav extends StatelessWidget {
 
   static const Color _navBg         = Color(0xFF1A3C92);
   static const Color _activeColor   = Color(0xFFFBBF24); // ← diganti kuning
-  static const Color _inactiveColor = Color(0x80FFFFFF); // white 50%
+  static const Color _inactiveColor = Color.fromARGB(255, 255, 255, 255); // white 50%
 
   // Urutan tab — sesuaikan dengan urutan _pages di MainShell (main.dart)
   // Tab ke-4 diubah dari "Profil" → "Pelayanan"

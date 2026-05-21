@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'detail_penyakit.dart';
+
 // ─── Model ───────────────────────────────────────────────────────────────────
 
 class PenyakitItem {
   final String nama;
-  final String kategoriOrgan; // dipakai untuk filter
+  final String kategoriOrgan;
 
   const PenyakitItem({
     required this.nama,
@@ -17,51 +18,48 @@ class PenyakitItem {
 
 final List<PenyakitItem> penyakitList = [
   // Paru-Paru
-  const PenyakitItem(nama: 'Pneumonia',    kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Asma',         kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Bronkitis',    kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'TBC',          kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'PPOK',         kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Efusi Pleura', kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Emfisema',     kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Sinusitis',    kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Rinitis',      kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'Pneumonia',     kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'Asma',          kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'Bronkitis',     kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'TBC',           kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'PPOK',          kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'Efusi Pleura',  kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'Emfisema',      kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'Sinusitis',     kategoriOrgan: 'Paru-Paru'),
+  const PenyakitItem(nama: 'Rinitis',       kategoriOrgan: 'Paru-Paru'),
   // Jantung
-  const PenyakitItem(nama: 'Hipertensi',   kategoriOrgan: 'Jantung'),
-  const PenyakitItem(nama: 'Aritmia',      kategoriOrgan: 'Jantung'),
-  const PenyakitItem(nama: 'Gagal Jantung',kategoriOrgan: 'Jantung'),
+  const PenyakitItem(nama: 'Hipertensi',    kategoriOrgan: 'Jantung'),
+  const PenyakitItem(nama: 'Aritmia',       kategoriOrgan: 'Jantung'),
+  const PenyakitItem(nama: 'Gagal Jantung', kategoriOrgan: 'Jantung'),
   // Ginjal
-  const PenyakitItem(nama: 'Batu Ginjal',  kategoriOrgan: 'Ginjal'),
-  const PenyakitItem(nama: 'Gagal Ginjal', kategoriOrgan: 'Ginjal'),
+  const PenyakitItem(nama: 'Batu Ginjal',   kategoriOrgan: 'Ginjal'),
+  const PenyakitItem(nama: 'Gagal Ginjal',  kategoriOrgan: 'Ginjal'),
   // Otak
-  const PenyakitItem(nama: 'Stroke',       kategoriOrgan: 'Otak'),
-  const PenyakitItem(nama: 'Epilepsi',     kategoriOrgan: 'Otak'),
-  const PenyakitItem(nama: 'Migrain',      kategoriOrgan: 'Otak'),
+  const PenyakitItem(nama: 'Stroke',        kategoriOrgan: 'Otak'),
+  const PenyakitItem(nama: 'Epilepsi',      kategoriOrgan: 'Otak'),
+  const PenyakitItem(nama: 'Migrain',       kategoriOrgan: 'Otak'),
   // Hati
-  const PenyakitItem(nama: 'Hepatitis A',  kategoriOrgan: 'Hati'),
-  const PenyakitItem(nama: 'Hepatitis B',  kategoriOrgan: 'Hati'),
-  const PenyakitItem(nama: 'Sirosis',      kategoriOrgan: 'Hati'),
+  const PenyakitItem(nama: 'Hepatitis A',   kategoriOrgan: 'Hati'),
+  const PenyakitItem(nama: 'Hepatitis B',   kategoriOrgan: 'Hati'),
+  const PenyakitItem(nama: 'Sirosis',       kategoriOrgan: 'Hati'),
   // Usus
-  const PenyakitItem(nama: 'Diare',        kategoriOrgan: 'Usus'),
-  const PenyakitItem(nama: 'Kolitis',      kategoriOrgan: 'Usus'),
+  const PenyakitItem(nama: 'Diare',         kategoriOrgan: 'Usus'),
+  const PenyakitItem(nama: 'Kolitis',       kategoriOrgan: 'Usus'),
   // Pencernaan
-  const PenyakitItem(nama: 'Maag',         kategoriOrgan: 'Pencernaan'),
-  const PenyakitItem(nama: 'GERD',         kategoriOrgan: 'Pencernaan'),
+  const PenyakitItem(nama: 'Maag',          kategoriOrgan: 'Pencernaan'),
+  const PenyakitItem(nama: 'GERD',          kategoriOrgan: 'Pencernaan'),
   // Tulang
-  const PenyakitItem(nama: 'Osteoporosis', kategoriOrgan: 'Tulang'),
-  const PenyakitItem(nama: 'Artritis',     kategoriOrgan: 'Tulang'),
+  const PenyakitItem(nama: 'Osteoporosis',  kategoriOrgan: 'Tulang'),
+  const PenyakitItem(nama: 'Artritis',      kategoriOrgan: 'Tulang'),
   // Esofagus
-  const PenyakitItem(nama: 'Disfagia',     kategoriOrgan: 'Esofagus'),
-  const PenyakitItem(nama: 'Refluks',      kategoriOrgan: 'Esofagus'),
+  const PenyakitItem(nama: 'Disfagia',      kategoriOrgan: 'Esofagus'),
+  const PenyakitItem(nama: 'Refluks',       kategoriOrgan: 'Esofagus'),
 ];
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
 class KategoriPenyakit extends StatefulWidget {
-  /// Nama organ yang dipilih dari KategoriOrgan.
-  /// Dipakai sebagai judul sub-kategori & filter penyakit.
   final String namaOrgan;
-
   const KategoriPenyakit({super.key, required this.namaOrgan});
 
   @override
@@ -70,10 +68,11 @@ class KategoriPenyakit extends StatefulWidget {
 
 class _KategoriPenyakitState extends State<KategoriPenyakit> {
   static const Color backgroundGrey = Color(0xFFF0F4FA);
-  static const Color primaryBlue    = Color(0xFF1A3A6B);
-  static const Color accentYellow   = Color(0xFFF59E0B);
-  static const Color textDark       = Color(0xFF1A1A2E);
+  static const Color primaryBlue    = Color(0xFF1A3C92);
+  static const Color accentYellow   = Color(0xFFFBBF24);
+  static const Color textDark       = Color(0xFF1A3C92);
   static const Color textMedium     = Color(0xFF6B7280);
+  static const Color navBlue        = Color(0xFF1A3C92);
 
   final TextEditingController _searchController = TextEditingController();
   late List<PenyakitItem> _byOrgan;
@@ -130,22 +129,16 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         children: [
-          // Tombol back ke Kategori Organ
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: primaryBlue, size: 20),
+                color: navBlue, size: 20),
           ),
           const SizedBox(width: 12),
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A73E8),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.medical_services_rounded,
-                color: Colors.white, size: 20),
+          Image.asset(
+            'assets/images/Logo_eduhealth_2.png', // ← nama file harus sama persis
+            width: 40,
+            height: 40,
           ),
           const SizedBox(width: 10),
           RichText(
@@ -154,7 +147,7 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
                 TextSpan(
                   text: 'Edu',
                   style: TextStyle(
-                    color: Color(0xFF1A73E8),
+                    color: Color(0xFF1A3C92),
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
@@ -162,7 +155,7 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
                 TextSpan(
                   text: 'Health',
                   style: TextStyle(
-                    color: Color(0xFFF59E0B),
+                    color: Color(0xFFFBBF24),
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
@@ -201,8 +194,7 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
             prefixIcon: Icon(Icons.search_rounded,
                 color: Color(0xFFB0B8C1), size: 22),
             border: InputBorder.none,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
           ),
         ),
       ),
@@ -228,10 +220,7 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
           const SizedBox(height: 2),
           Text(
             'Penyakit ${widget.namaOrgan}',
-            style: const TextStyle(
-              color: textMedium,
-              fontSize: 14,
-            ),
+            style: const TextStyle(color: textMedium, fontSize: 14),
           ),
         ],
       ),
@@ -258,7 +247,7 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
         crossAxisSpacing: 12,
         childAspectRatio: 1.0,
       ),
-      itemCount: _filtered.length + 1, // +1 untuk tombol Lainnya
+      itemCount: _filtered.length + 1,
       itemBuilder: (context, index) {
         if (index == _filtered.length) return _buildLainnyaButton(context);
         return _buildPenyakitCard(context, _filtered[index]);
@@ -272,12 +261,9 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => DetailPenyakit(
-              namaPenyakit: item.nama,
-            ),
+            builder: (_) => DetailPenyakit(namaPenyakit: item.nama),
           ),
         );
-
       },
       child: Container(
         decoration: BoxDecoration(

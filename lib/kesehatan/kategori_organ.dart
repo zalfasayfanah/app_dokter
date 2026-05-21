@@ -84,8 +84,8 @@ class KategoriOrgan extends StatefulWidget {
 
 class _KategoriOrganState extends State<KategoriOrgan> {
   static const Color backgroundGrey = Color(0xFFEEF3FB);
-  static const Color primaryBlue    = Color(0xFF1A73E8); // ← sama dengan pelayanan
-  static const Color textDark       = Color(0xFF1A1A2E);
+  static const Color primaryBlue    = Color(0xFF1A3C92);
+  static const Color textDark       = Color(0xFF1A3C92);
   static const Color textMedium     = Color(0xFF6B7280);
 
   final TextEditingController _searchController = TextEditingController();
@@ -152,35 +152,27 @@ class _KategoriOrganState extends State<KategoriOrgan> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: primaryBlue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.medical_services_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
+          Image.asset(
+            'assets/images/Logo_eduhealth_2.png', // ← nama file harus sama persis
+            width: 40,
+            height: 40,
           ),
           const SizedBox(width: 10),
           RichText(
-            text: TextSpan(
+            text: const TextSpan(
               children: [
                 TextSpan(
                   text: 'Edu',
                   style: TextStyle(
-                    color: primaryBlue,
+                    color: Color(0xFF1A3C92),
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
                 ),
-                const TextSpan(
+                TextSpan(
                   text: 'Health',
                   style: TextStyle(
-                    color: Color(0xFFF59E0B),
+                    color: Color(0xFFFBBF24),
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),

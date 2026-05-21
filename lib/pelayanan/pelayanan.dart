@@ -10,7 +10,7 @@ class Pelayanan extends StatefulWidget {
 class _PelayananState extends State<Pelayanan> {
 
   // ─── WARNA UTAMA ─────────────────────────────────────────────
-  static const Color primaryBlue = Color(0xFF1A73E8);
+  static const Color primaryBlue = Color(0xFF1A3C92);
 
   @override
   Widget build(BuildContext context) {
@@ -61,20 +61,10 @@ class _PelayananState extends State<Pelayanan> {
 
       child: Row(
         children: [
-          Container(
-            width: 36,
-            height: 36,
-
-            decoration: BoxDecoration(
-              color: primaryBlue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-
-            child: const Icon(
-              Icons.medical_services_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
+          Image.asset(
+            'assets/images/Logo_eduhealth_2.png',
+            width: 40,
+            height: 40,
           ),
 
           const SizedBox(width: 10),
@@ -96,7 +86,7 @@ class _PelayananState extends State<Pelayanan> {
                   text: 'Health',
 
                   style: TextStyle(
-                    color: Color(0xFFF59E0B),
+                    color: Color(0xFFFBBF24),
                     fontWeight: FontWeight.w800,
                     fontSize: 20,
                   ),
@@ -140,7 +130,7 @@ class _PelayananState extends State<Pelayanan> {
             style: TextStyle(
               fontSize: 13.5,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF1A1A2E),
+              color: Color(0xFF1A3C92),
               height: 1.4,
             ),
           ),
@@ -174,8 +164,7 @@ class _PelayananState extends State<Pelayanan> {
                 ),
 
                 TextSpan(
-                  text:
-                      ' untuk pemeriksaan menyeluruh, Terapi ',
+                  text: ' untuk pemeriksaan menyeluruh, Terapi ',
                 ),
 
                 TextSpan(
@@ -188,8 +177,7 @@ class _PelayananState extends State<Pelayanan> {
                 ),
 
                 TextSpan(
-                  text:
-                      ' untuk membantu regenerasi sel tubuh, ',
+                  text: ' untuk membantu regenerasi sel tubuh, ',
                 ),
 
                 TextSpan(
@@ -202,8 +190,7 @@ class _PelayananState extends State<Pelayanan> {
                 ),
 
                 TextSpan(
-                  text:
-                      ' profesional yang nyaman di rumah Anda, hingga ',
+                  text: ' profesional yang nyaman di rumah Anda, hingga ',
                 ),
 
                 TextSpan(
@@ -237,7 +224,7 @@ class _PelayananState extends State<Pelayanan> {
         style: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w800,
-          color: Color(0xFF1A1A2E),
+          color: Color(0xFF1A3C92),
         ),
       ),
     );

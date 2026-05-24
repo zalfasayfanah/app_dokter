@@ -4,6 +4,8 @@ import 'jadwal_praktek/jadwal_praktek.dart';
 import 'kesehatan/kategori_organ.dart';
 import 'pelayanan/pelayanan.dart';
 import 'profil_dokter.dart';
+import 'splash_screen.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      home: const MainShell(),
+      home: const SplashScreen(), 
     );
   }
 }
@@ -52,11 +54,11 @@ class _MainShellState extends State<MainShell> {
   // ─── Daftar Halaman ───────────────────────────────────────────────────────
 
   final List<Widget> _pages = const [
-  ProfilDokterPage(),
-  JadwalPraktek(),
-  KategoriOrgan(),
-  Pelayanan(),
-];
+    ProfilDokterPage(),
+    JadwalPraktek(),
+    KategoriOrgan(),
+    Pelayanan(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -75,5 +77,3 @@ class _MainShellState extends State<MainShell> {
     );
   }
 }
-
-

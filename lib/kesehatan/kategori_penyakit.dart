@@ -1,66 +1,19 @@
 import 'package:flutter/material.dart';
+import '../models/api_models.dart';
+import '../services/api_service.dart';
 import 'detail_penyakit.dart';
 
-// ─── Model ───────────────────────────────────────────────────────────────────
-
-class PenyakitItem {
-  final String nama;
-  final String kategoriOrgan;
-
-  const PenyakitItem({
-    required this.nama,
-    required this.kategoriOrgan,
-  });
-}
-
-// ─── Data (ganti/tambah sesuai kebutuhan) ────────────────────────────────────
-// kategoriOrgan harus sama persis dengan OrganItem.nama di kategori_organ.dart
-
-final List<PenyakitItem> penyakitList = [
-  // Paru-Paru
-  const PenyakitItem(nama: 'Pneumonia',     kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Asma',          kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Bronkitis',     kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'TBC',           kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'PPOK',          kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Efusi Pleura',  kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Emfisema',      kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Sinusitis',     kategoriOrgan: 'Paru-Paru'),
-  const PenyakitItem(nama: 'Rinitis',       kategoriOrgan: 'Paru-Paru'),
-  // Jantung
-  const PenyakitItem(nama: 'Hipertensi',    kategoriOrgan: 'Jantung'),
-  const PenyakitItem(nama: 'Aritmia',       kategoriOrgan: 'Jantung'),
-  const PenyakitItem(nama: 'Gagal Jantung', kategoriOrgan: 'Jantung'),
-  // Ginjal
-  const PenyakitItem(nama: 'Batu Ginjal',   kategoriOrgan: 'Ginjal'),
-  const PenyakitItem(nama: 'Gagal Ginjal',  kategoriOrgan: 'Ginjal'),
-  // Otak
-  const PenyakitItem(nama: 'Stroke',        kategoriOrgan: 'Otak'),
-  const PenyakitItem(nama: 'Epilepsi',      kategoriOrgan: 'Otak'),
-  const PenyakitItem(nama: 'Migrain',       kategoriOrgan: 'Otak'),
-  // Hati
-  const PenyakitItem(nama: 'Hepatitis A',   kategoriOrgan: 'Hati'),
-  const PenyakitItem(nama: 'Hepatitis B',   kategoriOrgan: 'Hati'),
-  const PenyakitItem(nama: 'Sirosis',       kategoriOrgan: 'Hati'),
-  // Usus
-  const PenyakitItem(nama: 'Diare',         kategoriOrgan: 'Usus'),
-  const PenyakitItem(nama: 'Kolitis',       kategoriOrgan: 'Usus'),
-  // Pencernaan
-  const PenyakitItem(nama: 'Maag',          kategoriOrgan: 'Pencernaan'),
-  const PenyakitItem(nama: 'GERD',          kategoriOrgan: 'Pencernaan'),
-  // Tulang
-  const PenyakitItem(nama: 'Osteoporosis',  kategoriOrgan: 'Tulang'),
-  const PenyakitItem(nama: 'Artritis',      kategoriOrgan: 'Tulang'),
-  // Esofagus
-  const PenyakitItem(nama: 'Disfagia',      kategoriOrgan: 'Esofagus'),
-  const PenyakitItem(nama: 'Refluks',       kategoriOrgan: 'Esofagus'),
-];
-
-// ─── Screen ──────────────────────────────────────────────────────────────────
+const int _kInitialVisible = 6;
 
 class KategoriPenyakit extends StatefulWidget {
+  final String organId;
   final String namaOrgan;
-  const KategoriPenyakit({super.key, required this.namaOrgan});
+
+  const KategoriPenyakit({
+    super.key,
+    required this.organId,
+    required this.namaOrgan,
+  });
 
   @override
   State<KategoriPenyakit> createState() => _KategoriPenyakitState();
@@ -68,23 +21,33 @@ class KategoriPenyakit extends StatefulWidget {
 
 class _KategoriPenyakitState extends State<KategoriPenyakit> {
   static const Color backgroundGrey = Color(0xFFF0F4FA);
-  static const Color primaryBlue    = Color(0xFF1A3C92);
-  static const Color accentYellow   = Color(0xFFFBBF24);
-  static const Color textDark       = Color(0xFF1A3C92);
-  static const Color textMedium     = Color(0xFF6B7280);
-  static const Color navBlue        = Color(0xFF1A3C92);
+  static const Color primaryBlue = Color(0xFF1A3C92);
+  static const Color accentYellow = Color(0xFFFBBF24);
+  static const Color textDark = Color(0xFF1A3C92);
+  static const Color textMedium = Color(0xFF6B7280);
+  static const Color navBlue = Color(0xFF1A3C92);
 
   final TextEditingController _searchController = TextEditingController();
-  late List<PenyakitItem> _byOrgan;
-  late List<PenyakitItem> _filtered;
+  final ApiService _apiService = ApiService();
+
+  late Future<List<PenyakitItem>> _penyakitFuture;
+  List<PenyakitItem> _byOrgan = [];
+  List<PenyakitItem> _filtered = [];
+  bool _showAll = false;
 
   @override
   void initState() {
     super.initState();
-    _byOrgan  = penyakitList
-        .where((p) => p.kategoriOrgan == widget.namaOrgan)
-        .toList();
-    _filtered = _byOrgan;
+    _penyakitFuture = _loadPenyakit();
+  }
+
+  Future<List<PenyakitItem>> _loadPenyakit() async {
+    final penyakit = await _apiService.getPenyakitByOrganId(widget.organId);
+    setState(() {
+      _byOrgan = penyakit;
+      _filtered = penyakit;
+    });
+    return penyakit;
   }
 
   @override
@@ -97,12 +60,20 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
     setState(() {
       _filtered = query.isEmpty
           ? _byOrgan
-          : _byOrgan
-              .where((p) =>
-                  p.nama.toLowerCase().contains(query.toLowerCase()))
-              .toList();
+          : _byOrgan.where((p) {
+              return p.nama.toLowerCase().contains(query.toLowerCase()) ||
+                  p.deskripsi.toLowerCase().contains(query.toLowerCase());
+            }).toList();
+      _showAll = false;
     });
   }
+
+  List<PenyakitItem> get _visible {
+    if (_showAll || _filtered.length <= _kInitialVisible) return _filtered;
+    return _filtered.sublist(0, _kInitialVisible);
+  }
+
+  bool get _showToggle => _filtered.length > _kInitialVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +86,26 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
             _buildHeader(context),
             _buildSearchBar(),
             _buildTitle(),
-            Expanded(child: _buildGrid()),
+            Expanded(
+              child: FutureBuilder<List<PenyakitItem>>(
+                future: _penyakitFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return _buildError(snapshot.error.toString());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return _buildEmpty();
+                  }
+
+                  return _buildGrid();
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -131,8 +121,11 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: navBlue, size: 20),
+            child: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: navBlue,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Image.asset(
@@ -191,8 +184,11 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
           decoration: const InputDecoration(
             hintText: 'Search',
             hintStyle: TextStyle(color: Color(0xFFB0B8C1), fontSize: 15),
-            prefixIcon: Icon(Icons.search_rounded,
-                color: Color(0xFFB0B8C1), size: 22),
+            prefixIcon: Icon(
+              Icons.search_rounded,
+              color: Color(0xFFB0B8C1),
+              size: 22,
+            ),
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
           ),
@@ -239,6 +235,9 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
       );
     }
 
+    final items = _visible;
+    final itemCount = items.length + (_showToggle ? 1 : 0);
+
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -247,10 +246,12 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
         crossAxisSpacing: 12,
         childAspectRatio: 1.0,
       ),
-      itemCount: _filtered.length + 1,
+      itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index == _filtered.length) return _buildLainnyaButton(context);
-        return _buildPenyakitCard(context, _filtered[index]);
+        if (_showToggle && index == items.length) {
+          return _buildLainnyaButton(context);
+        }
+        return _buildPenyakitCard(context, items[index]);
       },
     );
   }
@@ -260,9 +261,7 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => DetailPenyakit(namaPenyakit: item.nama),
-          ),
+          MaterialPageRoute(builder: (_) => DetailPenyakit(penyakit: item)),
         );
       },
       child: Container(
@@ -282,8 +281,11 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.description_rounded,
-                color: accentYellow, size: 32),
+            const Icon(
+              Icons.description_rounded,
+              color: accentYellow,
+              size: 32,
+            ),
             const SizedBox(height: 8),
             Text(
               item.nama,
@@ -305,7 +307,9 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
   Widget _buildLainnyaButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: tampilkan semua penyakit untuk organ ini
+        setState(() {
+          _showAll = !_showAll;
+        });
       },
       child: Container(
         decoration: BoxDecoration(
@@ -313,15 +317,54 @@ class _KategoriPenyakitState extends State<KategoriPenyakit> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: accentYellow, width: 2),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'Lainnya',
-            style: TextStyle(
+            _showAll ? 'Sembunyikan' : 'Lainnya',
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w700,
               fontSize: 13,
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 12),
+            const Text(
+              'Gagal memuat daftar penyakit',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: textMedium),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmpty() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text(
+          'Tidak ada penyakit tersedia untuk kategori ini.',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Color(0xFF6B7280), fontSize: 16),
         ),
       ),
     );

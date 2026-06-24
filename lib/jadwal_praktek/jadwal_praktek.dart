@@ -1,81 +1,31 @@
 import 'package:flutter/material.dart';
-
-// ─── Model ───────────────────────────────────────────────────────────────────
-
-class JadwalItem {
-  final String hari;
-  final String jam;
-  const JadwalItem({required this.hari, required this.jam});
-}
-
-class RumahSakitItem {
-  final String nama;
-  final String alamat;
-  final String imageUrl;
-  final List<JadwalItem> jadwal;
-
-  const RumahSakitItem({
-    required this.nama,
-    required this.alamat,
-    required this.imageUrl,
-    required this.jadwal,
-  });
-}
-
-// ─── Data (ganti dengan data dari API jika sudah ada) ────────────────────────
-
-final List<RumahSakitItem> rumahSakitList = [
-  RumahSakitItem(
-    nama: 'RS UNIMUS',
-    alamat: 'Jl. Kedungmundu No.214',
-    imageUrl: 'https://placehold.co/120x90/2ecc71/ffffff?text=RS+UNIMUS',
-    jadwal: const [
-      JadwalItem(hari: 'Senin', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Selasa', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Rabu', jam: '08.00 - 12.00'),
-    ],
-  ),
-  RumahSakitItem(
-    nama: 'RS UNIMUS',
-    alamat: 'Jl. Kedungmundu No.214',
-    imageUrl: 'https://placehold.co/120x90/2ecc71/ffffff?text=RS+UNIMUS',
-    jadwal: const [
-      JadwalItem(hari: 'Senin', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Selasa', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Rabu', jam: '08.00 - 12.00'),
-    ],
-  ),
-  RumahSakitItem(
-    nama: 'RS UNIMUS',
-    alamat: 'Jl. Kedungmundu No.214',
-    imageUrl: 'https://placehold.co/120x90/2ecc71/ffffff?text=RS+UNIMUS',
-    jadwal: const [
-      JadwalItem(hari: 'Senin', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Selasa', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Rabu', jam: '08.00 - 12.00'),
-    ],
-  ),
-  RumahSakitItem(
-    nama: 'RS UNIMUS',
-    alamat: 'Jl. Kedungmundu No.214',
-    imageUrl: 'https://placehold.co/120x90/2ecc71/ffffff?text=RS+UNIMUS',
-    jadwal: const [
-      JadwalItem(hari: 'Senin', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Selasa', jam: '08.00 - 12.00'),
-      JadwalItem(hari: 'Rabu', jam: '08.00 - 12.00'),
-    ],
-  ),
-];
+import '../models/api_models.dart';
+import '../services/api_service.dart';
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
-class JadwalPraktek extends StatelessWidget {
+class JadwalPraktek extends StatefulWidget {
   const JadwalPraktek({super.key});
 
-  static const Color primaryBlue    = Color(0xFF1A3C92);
+  @override
+  State<JadwalPraktek> createState() => _JadwalPraktekState();
+}
+
+class _JadwalPraktekState extends State<JadwalPraktek> {
+  late ApiService _apiService;
+  late Future<List<RumahSakitItem>> _jadwalFuture;
+
+  static const Color primaryBlue = Color(0xFF1A3C92);
   static const Color backgroundGrey = Color(0xFFF0F4FA);
-  static const Color textDark       = Color(0xFF1A1A2E);
-  static const Color textMedium     = Color(0xFF6B7280);
+  static const Color textDark = Color(0xFF1A1A2E);
+  static const Color textMedium = Color(0xFF6B7280);
+
+  @override
+  void initState() {
+    super.initState();
+    _apiService = ApiService();
+    _jadwalFuture = _apiService.getJadwalPraktek();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,11 +104,77 @@ class JadwalPraktek extends StatelessWidget {
   // ── List ───────────────────────────────────────────────────────────────────
 
   Widget _buildList() {
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-      itemCount: rumahSakitList.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) => _buildCard(rumahSakitList[index]),
+    return FutureBuilder<List<RumahSakitItem>>(
+      future: _jadwalFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Gagal memuat jadwal praktik',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    snapshot.error.toString(),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: textMedium),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _jadwalFuture = _apiService.getJadwalPraktek();
+                      });
+                    },
+                    child: const Text('Coba Lagi'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.info_outline, size: 48, color: Colors.blue),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Tidak ada jadwal praktik',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final jadwalList = snapshot.data!;
+        return ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+          itemCount: jadwalList.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) => _buildCard(jadwalList[index]),
+        );
+      },
     );
   }
 
@@ -195,8 +211,11 @@ class JadwalPraktek extends StatelessWidget {
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.local_hospital_rounded,
-                    color: Color(0xFFFBBF24), size: 18),
+                const Icon(
+                  Icons.local_hospital_rounded,
+                  color: Color(0xFFFBBF24),
+                  size: 18,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   item.nama,
@@ -211,8 +230,11 @@ class JadwalPraktek extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.location_on_rounded,
-                    color: Color(0xFFEF4444), size: 16),
+                const Icon(
+                  Icons.location_on_rounded,
+                  color: Color(0xFFEF4444),
+                  size: 16,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   item.alamat,
@@ -242,8 +264,11 @@ class JadwalPraktek extends StatelessWidget {
           width: 110,
           height: 90,
           color: const Color(0xFFD1FAE5),
-          child: const Icon(Icons.local_hospital_rounded,
-              color: Color(0xFF059669), size: 36),
+          child: const Icon(
+            Icons.local_hospital_rounded,
+            color: Color(0xFF059669),
+            size: 36,
+          ),
         ),
       ),
     );
@@ -272,10 +297,7 @@ class JadwalPraktek extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     j.jam,
-                    style: const TextStyle(
-                      color: textMedium,
-                      fontSize: 13,
-                    ),
+                    style: const TextStyle(color: textMedium, fontSize: 13),
                   ),
                 ],
               ),

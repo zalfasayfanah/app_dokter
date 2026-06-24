@@ -8,7 +8,6 @@ class Pelayanan extends StatefulWidget {
 }
 
 class _PelayananState extends State<Pelayanan> {
-
   // ─── WARNA UTAMA ─────────────────────────────────────────────
   static const Color primaryBlue = Color(0xFF1A3C92);
 
@@ -163,9 +162,7 @@ class _PelayananState extends State<Pelayanan> {
                   ),
                 ),
 
-                TextSpan(
-                  text: ' untuk pemeriksaan menyeluruh, Terapi ',
-                ),
+                TextSpan(text: ' untuk pemeriksaan menyeluruh, Terapi '),
 
                 TextSpan(
                   text: 'Stemcell',
@@ -176,9 +173,7 @@ class _PelayananState extends State<Pelayanan> {
                   ),
                 ),
 
-                TextSpan(
-                  text: ' untuk membantu regenerasi sel tubuh, ',
-                ),
+                TextSpan(text: ' untuk membantu regenerasi sel tubuh, '),
 
                 TextSpan(
                   text: 'Home Care',
@@ -203,8 +198,7 @@ class _PelayananState extends State<Pelayanan> {
                 ),
 
                 TextSpan(
-                  text:
-                      ' praktis yang bisa diakses kapan saja, di mana saja.',
+                  text: ' praktis yang bisa diakses kapan saja, di mana saja.',
                 ),
               ],
             ),
@@ -233,9 +227,7 @@ class _PelayananState extends State<Pelayanan> {
   // ─── GRID PELAYANAN ──────────────────────────────────────────
 
   Widget _buildServicesGrid() {
-
     final List<_ServiceItem> services = [
-
       _ServiceItem(
         title: 'Poliklinik Spesialis\nPenyakit Dalam',
         imagePath: 'assets/images/poliklinik.jpeg',
@@ -320,11 +312,7 @@ class _PelayananState extends State<Pelayanan> {
                 fit: BoxFit.cover,
 
                 errorBuilder: (_, __, ___) {
-                  return Icon(
-                    item.fallbackIcon,
-                    color: primaryBlue,
-                    size: 38,
-                  );
+                  return Icon(item.fallbackIcon, color: primaryBlue, size: 38);
                 },
               ),
             ),
@@ -357,7 +345,6 @@ class _PelayananState extends State<Pelayanan> {
 // ─── MODEL DATA ────────────────────────────────────────────────
 
 class _ServiceItem {
-
   final String title;
   final String imagePath;
   final IconData fallbackIcon;

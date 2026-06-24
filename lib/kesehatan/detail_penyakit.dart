@@ -1,183 +1,208 @@
 import 'package:flutter/material.dart';
-import 'data_penyakit.dart';
+import '../models/api_models.dart';
+import '../services/api_helpers.dart';
 
 class DetailPenyakit extends StatefulWidget {
-  final String namaPenyakit;
+  final PenyakitItem penyakit;
 
-  const DetailPenyakit({
-    super.key,
-    required this.namaPenyakit,
-  });
+  const DetailPenyakit({super.key, required this.penyakit});
 
   @override
   State<DetailPenyakit> createState() => _DetailPenyakitState();
 }
 
 class _DetailPenyakitState extends State<DetailPenyakit> {
-
-  bool penyebab   = false;
-  bool gejala     = false;
-  bool bahaya     = false;
+  late Future<PenyakitItem> _penyakitFuture;
+  bool penyebab = false;
+  bool gejala = false;
+  bool bahaya = false;
   bool pengobatan = false;
 
   @override
+  void initState() {
+    super.initState();
+    _penyakitFuture = _fetchPenyakitDetail();
+  }
+
+  Future<PenyakitItem> _fetchPenyakitDetail() async {
+    try {
+      final detail = await apiService.getPenyakitById(widget.penyakit.id);
+      return detail ?? widget.penyakit;
+    } catch (e) {
+      debugPrint('DetailPenyakit - load error: $e');
+      return widget.penyakit;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    final data = dataPenyakit[widget.namaPenyakit] ?? {};
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: FutureBuilder<PenyakitItem>(
+          future: _penyakitFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              // ── TOMBOL KEMBALI ────────────────────────────────────────────
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const Row(
-                  children: [
-                    Icon(Icons.arrow_back, color: Colors.indigo),
-                    SizedBox(width: 8),
-                    Text(
-                      "Kembali",
-                      style: TextStyle(
-                        color: Colors.indigo,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+            if (snapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'Gagal memuat detail penyakit: ${snapshot.error}',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
+              );
+            }
 
-              const SizedBox(height: 15),
-
-              // ── JUDUL ─────────────────────────────────────────────────────
-              Row(
+            final data = snapshot.data ?? widget.penyakit;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  // ── TOMBOL KEMBALI ────────────────────────────────────────────
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Row(
                       children: [
+                        Icon(Icons.arrow_back, color: Colors.indigo),
+                        SizedBox(width: 8),
                         Text(
-                          widget.namaPenyakit,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff1A237E),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          data["namaLengkap"] ?? "-",
-                          style: const TextStyle(color: Colors.indigo),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
+                          "Kembali",
+                          style: TextStyle(
                             color: Colors.indigo,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            data["kategori"] ?? "-",
-                            style: const TextStyle(color: Colors.white),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundColor: Colors.grey.shade200,
-                    child: Image.asset(
-                      data["gambar"] ?? "assets/images/gerd.png",
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.medical_services, size: 40),
+
+                  const SizedBox(height: 15),
+
+                  // ── JUDUL ─────────────────────────────────────────────────────
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              data.nama,
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xff1A237E),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Detail Penyakit',
+                              style: const TextStyle(color: Colors.indigo),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.indigo,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                data.organId.isNotEmpty
+                                    ? 'Organ ID: ${data.organId}'
+                                    : 'Detail Penyakit',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      CircleAvatar(
+                        radius: 45,
+                        backgroundColor: Colors.grey.shade200,
+                        child: Image.asset(
+                          'assets/images/gerd.png',
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.medical_services, size: 40),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ── DESKRIPSI ─────────────────────────────────────────────────
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF5EFD9),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.indigo),
+                    ),
+                    child: Text(
+                      data.deskripsi.isNotEmpty
+                          ? data.deskripsi
+                          : 'Deskripsi belum tersedia',
                     ),
                   ),
+
+                  const SizedBox(height: 15),
+
+                  // ── GAMBAR ────────────────────────────────────────────────────
+                  Row(
+                    children: [
+                      Expanded(child: _gambar("assets/images/g1.png")),
+                      const SizedBox(width: 10),
+                      Expanded(child: _gambar("assets/images/g2.png")),
+                      const SizedBox(width: 10),
+                      Expanded(child: _gambar("assets/images/g3.png")),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ── ACCORDION: Penyebab, Gejala, Bahaya ───────────────────────
+                  _expandTile(
+                    "Penyebab Utama",
+                    Icons.help,
+                    Colors.blue,
+                    penyebab,
+                    () {},
+                    data.penyebab.isNotEmpty ? data.penyebab : 'Belum tersedia',
+                  ),
+
+                  _expandTile(
+                    "Gejala",
+                    Icons.sentiment_satisfied,
+                    Colors.orange,
+                    gejala,
+                    () {},
+                    data.gejala.isNotEmpty ? data.gejala : 'Belum tersedia',
+                  ),
+
+                  _expandTile(
+                    "Pengobatan",
+                    Icons.medication,
+                    Colors.teal,
+                    pengobatan,
+                    () {},
+                    data.penanganan.isNotEmpty
+                        ? data.penanganan
+                        : 'Belum tersedia',
+                  ),
+
+                  const SizedBox(height: 20),
                 ],
               ),
-
-              const SizedBox(height: 20),
-
-              // ── DESKRIPSI ─────────────────────────────────────────────────
-              Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: const Color(0xffF5EFD9),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.indigo),
-                ),
-                child: Text(
-                  data["deskripsi"] ?? "Deskripsi belum tersedia",
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // ── GAMBAR ────────────────────────────────────────────────────
-              Row(
-                children: [
-                  Expanded(child: _gambar("assets/images/g1.png")),
-                  const SizedBox(width: 10),
-                  Expanded(child: _gambar("assets/images/g2.png")),
-                  const SizedBox(width: 10),
-                  Expanded(child: _gambar("assets/images/g3.png")),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              // ── ACCORDION: Penyebab, Gejala, Bahaya ───────────────────────
-              _expandTile(
-                "Penyebab Utama",
-                Icons.help,
-                Colors.blue,
-                penyebab,
-                () {},
-                data["penyebab"] ?? "Belum tersedia",
-              ),
-
-              _expandTile(
-                "Gejala",
-                Icons.sentiment_satisfied,
-                Colors.orange,
-                gejala,
-                () {},
-                data["gejala"] ?? "Belum tersedia",
-              ),
-
-              _expandTile(
-                "Bahaya Jika Dibiarkan",
-                Icons.warning,
-                Colors.amber,
-                bahaya,
-                () {},
-                data["bahaya"] ?? "Belum tersedia",
-              ),
-
-              // ── ACCORDION: Cara Mencegah & Cara Pengobatan ────────────────
-              _expandTileList(
-                "Cara Mencegah",
-                Icons.health_and_safety,
-                Colors.green,
-                data["mencegah"] as List? ?? [],
-              ),
-
-              _expandTileList(
-                "Cara Pengobatan",
-                Icons.medication,
-                Colors.teal,
-                data["pengobatan"] as List? ?? [],
-              ),
-
-              const SizedBox(height: 20),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -218,15 +243,9 @@ class _DetailPenyakitState extends State<DetailPenyakit> {
           backgroundColor: warna,
           child: Icon(icon, color: Colors.white),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: Text(isi),
-          ),
+          Padding(padding: const EdgeInsets.all(15), child: Text(isi)),
         ],
       ),
     );
@@ -234,12 +253,7 @@ class _DetailPenyakitState extends State<DetailPenyakit> {
 
   /// ExpansionTile dengan isi berupa List bullet
   /// — tampilan sama persis dengan _expandTile di atas
-  Widget _expandTileList(
-    String title,
-    IconData icon,
-    Color warna,
-    List isi,
-  ) {
+  Widget _expandTileList(String title, IconData icon, Color warna, List isi) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: ExpansionTile(
@@ -248,10 +262,7 @@ class _DetailPenyakitState extends State<DetailPenyakit> {
           backgroundColor: warna,
           child: Icon(icon, color: Colors.white),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
@@ -264,11 +275,14 @@ class _DetailPenyakitState extends State<DetailPenyakit> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("• ",
-                              style: TextStyle(
-                                  color: warna,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
+                          Text(
+                            "• ",
+                            style: TextStyle(
+                              color: warna,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                           Expanded(child: Text(e.toString())),
                         ],
                       ),

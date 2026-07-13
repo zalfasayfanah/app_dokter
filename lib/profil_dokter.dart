@@ -1,7 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ProfilDokterPage extends StatelessWidget {
   const ProfilDokterPage({super.key});
+
+  // Fungsi untuk membuka email
+  void _launchEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'arifrahmanphone@gmail.com',
+    );
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    }
+  }
+
+  // Fungsi untuk membuka telepon
+  void _launchPhone() async {
+    final Uri phoneUri = Uri(
+      scheme: 'tel',
+      path: '0895-6168-33383',
+    );
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(phoneUri);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +35,6 @@ class ProfilDokterPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-
               // ── HEADER ───────────────────────────────────────────────────
               Container(
                 width: double.infinity,
@@ -27,8 +50,6 @@ class ProfilDokterPage extends StatelessWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 30),
-
-                    // Foto dokter
                     Container(
                       width: 114,
                       height: 114,
@@ -57,9 +78,7 @@ class ProfilDokterPage extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 15),
-
                     const Text(
                       "Dr. Arif Rahman, Sp.PD",
                       style: TextStyle(
@@ -82,7 +101,6 @@ class ProfilDokterPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
 
               // ── 1. INFORMASI SINGKAT ─────────────────────────────────────
@@ -100,10 +118,9 @@ class ProfilDokterPage extends StatelessWidget {
                 ),
               ),
 
-              // ── DESKRIPSI (tanpa judul) ──────────────────────────────────
+              // ── DESKRIPSI ──────────────────────────────────────────────────
               Container(
-                margin: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 padding: const EdgeInsets.all(18),
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -143,11 +160,9 @@ class ProfilDokterPage extends StatelessWidget {
 
               // ── 2. LAYANAN ───────────────────────────────────────────────
               buildTitle("Layanan"),
-
               layananCard("Geriatri", "Layanan kesehatan khusus untuk lansia"),
               layananCard("Osteoarthritis", "Perawatan nyeri sendi dan tulang"),
               layananCard("Diabetes", "Pengelolaan gula darah terpadu"),
-
               const SizedBox(height: 10),
 
               // ── 3. TENTANG DOKTER ────────────────────────────────────────
@@ -175,7 +190,6 @@ class ProfilDokterPage extends StatelessWidget {
 
               // ── 4. SPESIALIS & KEAHLIAN ──────────────────────────────────
               buildTitle("Spesialis & Keahlian"),
-
               spesialisCard("🩺", "Penyakit Dalam Umum",
                   "Diagnosis dan tata laksana berbagai penyakit dalam secara komprehensif."),
               spesialisCard("❤️", "Hipertensi & Penyakit Jantung",
@@ -191,7 +205,6 @@ class ProfilDokterPage extends StatelessWidget {
 
               // ── 5. RIWAYAT PEKERJAAN ─────────────────────────────────────
               buildTitle("Riwayat Pekerjaan"),
-
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
@@ -232,7 +245,6 @@ class ProfilDokterPage extends StatelessWidget {
 
               // ── 6. KEANGGOTAAN ORGANISASI PROFESI ────────────────────────
               buildTitle("Keanggotaan Organisasi Profesi"),
-
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
                 child: Align(
@@ -243,7 +255,6 @@ class ProfilDokterPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               organisasiCard("1", "APASL",
                   "Asian Pacific Association for the Study of the Liver"),
               organisasiCard("2", "ASPI", "Asosiasi Sel Punca Indonesia"),
@@ -260,7 +271,11 @@ class ProfilDokterPage extends StatelessWidget {
                   "Perhimpunan Reumatologi Indonesia"),
               organisasiCard("9", "S.si", ""),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
+
+              // ── 7. FOOTER ──────────────────────────────────────────────────
+              _buildFooter(),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -537,6 +552,78 @@ class ProfilDokterPage extends StatelessWidget {
                         fontSize: 13,
                         color: Colors.grey)),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── FOOTER WIDGET ──────────────────────────────────────────────────────────
+
+  Widget _buildFooter() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.all(18),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // JUDUL
+          const Text(
+            "Kontak & Sosial Media",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A3C92),
+            ),
+          ),
+          const Divider(),
+          
+          // Facebook
+          _buildFooterItem(FontAwesomeIcons.facebook, "@doktermimin"),
+          // Instagram
+          _buildFooterItem(FontAwesomeIcons.instagram, "@doktermimin"),
+          // TikTok
+          _buildFooterItem(FontAwesomeIcons.tiktok, "@simimin"),
+          // Lokasi
+          _buildFooterItem(Icons.location_on, "Kota Semarang"),
+          // Email (bisa diklik)
+          InkWell(
+            onTap: _launchEmail,
+            child: _buildFooterItem(Icons.email, "arifrahmanphone@gmail.com"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooterItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF1A3C92), size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF1A3C92),
+              ),
             ),
           ),
         ],

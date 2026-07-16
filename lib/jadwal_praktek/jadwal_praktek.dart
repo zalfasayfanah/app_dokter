@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/api_config.dart';
 import '../models/api_models.dart';
 import '../services/api_service.dart';
 
@@ -29,6 +30,7 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('JadwalPraktek build currentIndex');
     return Scaffold(
       backgroundColor: backgroundGrey,
       body: SafeArea(
@@ -52,7 +54,7 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
       child: Row(
         children: [
           Image.asset(
-            'assets/images/Logo_eduhealth_2.png', // ← nama file harus sama persis
+            'assets/images/Logo_eduhealth_2.png',
             width: 40,
             height: 40,
           ),
@@ -107,6 +109,13 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
     return FutureBuilder<List<RumahSakitItem>>(
       future: _jadwalFuture,
       builder: (context, snapshot) {
+        debugPrint('JadwalPraktek - snapshot: ' 
+            'state=${snapshot.connectionState} ' 
+            'hasData=${snapshot.hasData} ' 
+            'length=${snapshot.data?.length} ' 
+            'hasError=${snapshot.hasError} ' 
+            'error=${snapshot.error}');
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -128,9 +137,10 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
                   const SizedBox(height: 8),
                   Text(
                     snapshot.error.toString(),
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: textMedium),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: textMedium),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -209,7 +219,9 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
             const SizedBox(height: 12),
             const Divider(height: 1, color: Color(0xFFE5E7EB)),
             const SizedBox(height: 10),
+            // ── Nama Rumah Sakit ──
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.local_hospital_rounded,
@@ -217,31 +229,44 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
                   size: 18,
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  item.nama,
-                  style: const TextStyle(
-                    color: textDark,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
+                Expanded(
+                  child: Text(
+                    item.nama,
+                    style: const TextStyle(
+                      color: textDark,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 4),
+            // ── Alamat ──
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.location_on_rounded,
-                  color: Color(0xFFEF4444),
-                  size: 16,
+                const Padding(
+                  padding: EdgeInsets.only(top: 1),
+                  child: Icon(
+                    Icons.location_on_rounded,
+                    color: Color(0xFFEF4444),
+                    size: 16,
+                  ),
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  item.alamat,
-                  style: const TextStyle(
-                    color: textMedium,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
+                Expanded(
+                  child: Text(
+                    item.alamat,
+                    style: const TextStyle(
+                      color: textMedium,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -253,25 +278,66 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
   }
 
   Widget _buildHospitalImage(String url) {
+    final imageUrl = _resolveImageUrl(url);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        url,
+      child: Container(
         width: 110,
         height: 90,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
+        color: const Color(0xFFD1FAE5),
+        child: Image.network(
+          imageUrl,
           width: 110,
           height: 90,
-          color: const Color(0xFFD1FAE5),
-          child: const Icon(
-            Icons.local_hospital_rounded,
-            color: Color(0xFF059669),
-            size: 36,
-          ),
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const Center(
+              child: Icon(
+                Icons.local_hospital_rounded,
+                color: Color(0xFF059669),
+                size: 36,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            debugPrint('JadwalPraktek image failed: $imageUrl -> $error');
+            return const Center(
+              child: Icon(
+                Icons.local_hospital_rounded,
+                color: Color(0xFF059669),
+                size: 36,
+              ),
+            );
+          },
         ),
       ),
     );
+  }
+
+  String _resolveImageUrl(String url) {
+    if (url.isEmpty) {
+      return 'https://placehold.co/110x90/2ecc71/ffffff?text=RS';
+    }
+
+    final trimmedUrl = url.trim();
+    final normalizedUrl = trimmedUrl.replaceAll(' ', '%20');
+
+    if (normalizedUrl.startsWith('http://') || normalizedUrl.startsWith('https://')) {
+      try {
+        final parsed = Uri.parse(normalizedUrl);
+        return parsed.toString();
+      } catch (_) {
+        return Uri.parse(Uri.encodeFull(normalizedUrl)).toString();
+      }
+    }
+
+    final baseUrl = ApiConfig.baseUrl.endsWith('/')
+        ? ApiConfig.baseUrl
+        : '${ApiConfig.baseUrl}/';
+    final path = normalizedUrl.startsWith('/') ? normalizedUrl.substring(1) : normalizedUrl;
+    return '$baseUrl${Uri.encodeFull(path)}';
   }
 
   Widget _buildScheduleTable(List<JadwalItem> jadwal) {
@@ -282,9 +348,10 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
             (j) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 52,
+                    width: 72,
                     child: Text(
                       j.hari,
                       style: const TextStyle(
@@ -295,9 +362,16 @@ class _JadwalPraktekState extends State<JadwalPraktek> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    j.jam,
-                    style: const TextStyle(color: textMedium, fontSize: 13),
+                  Expanded(
+                    child: Text(
+                      j.jam,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: textMedium,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ],
               ),

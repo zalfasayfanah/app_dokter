@@ -61,13 +61,15 @@ class RumahSakitItem {
   });
 
   factory RumahSakitItem.fromJson(Map<String, dynamic> json) {
+    final rawImageUrl = json['imageUrl'] ?? json['image_url'] ?? json['gambar'] ?? '';
+
     return RumahSakitItem(
       id: json['id']?.toString() ?? '',
       nama: json['nama'] ?? '',
       alamat: json['alamat'] ?? '',
-      imageUrl:
-          json['imageUrl'] ??
-          'https://placehold.co/120x90/2ecc71/ffffff?text=RS',
+      imageUrl: rawImageUrl is String && rawImageUrl.isNotEmpty
+          ? rawImageUrl
+          : 'https://placehold.co/120x90/2ecc71/ffffff?text=RS',
       jadwal:
           (json['jadwal'] as List<dynamic>?)
               ?.map((j) => JadwalItem.fromJson(j))

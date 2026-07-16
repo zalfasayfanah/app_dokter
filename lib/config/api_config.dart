@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class ApiConfig {
   // Ganti dengan URL website Anda jika backend berada di host/port lain.
-  static const String baseUrl = 'http://10.62.53.123/WebDokter/api';
+  static const String baseUrl = 'http://192.168.1.15/WebDokter/api';
 
   // Endpoints untuk PHP native
   static const String jadwalPraktekEndpoint = '/jadwal_praktek.php';
